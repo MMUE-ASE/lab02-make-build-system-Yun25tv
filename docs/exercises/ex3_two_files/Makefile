@@ -5,6 +5,8 @@
 #   Part A — start with two explicit rules (like Exercise 2, repeated twice)
 #   Part B — replace them with a single pattern rule
 # -----------------------------------------------------------------------
+help:
+	@echo "Help command: Use make all, make clean and ..."
 
 CC       = arm-none-eabi-gcc
 CFLAGS   = -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -O0 -ffreestanding
@@ -16,13 +18,13 @@ BUILDDIR = output
 #          They live in the current directory (no subfolder prefix needed here).
 #          You will not use SRCS in Part A — it is here so Part B can derive
 #          OBJS from it with a substitution reference.
-SRCS =
+SRCS = utils.c math.c
 
 # TODO A2: Write the default target "all" that depends on output/utils.o
 #          and output/math.o (list them explicitly for now).
 #
 # YOUR RULE HERE
-
+#all: output/utils.o output/math.o
 
 $(BUILDDIR):
 	mkdir -p $@
@@ -31,12 +33,14 @@ $(BUILDDIR):
 #          (same pattern as Exercise 2, TODO 2)
 #
 # YOUR RULE HERE
-
+#output/utils.o: utils.c | $(BUILDDIR)
+#	$(CC) $(CFLAGS) -c $< -o $@
 
 # TODO A4: Write an explicit rule for output/math.o from math.c
 #
 # YOUR RULE HERE
-
+#output/math.o: math.c | $(BUILDDIR)
+#	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: all clean
 
@@ -51,7 +55,7 @@ clean:
 # TODO B1: Derive OBJS from SRCS using a substitution reference.
 #          Replace the .c suffix with a path inside $(BUILDDIR)/.
 #          Hint: $(SRCS:%.c=$(BUILDDIR)/%.o)
-OBJS =
+OBJS = $(SRCS:%.c=$(BUILDDIR)/%.o)
 
 # TODO B2: Do these three things together, then run make:
 #          1. Delete the explicit rules A3 and A4 above.
@@ -62,3 +66,7 @@ OBJS =
 #                      $(CC) $(CFLAGS) -c $< -o $@
 #
 # YOUR RULE HERE
+all: $(BUILDDIR) $(OBJS)
+
+$(BUILDDIR)/%.o : %.c | $(BUILDDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
