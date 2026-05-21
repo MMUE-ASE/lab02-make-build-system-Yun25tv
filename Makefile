@@ -85,15 +85,15 @@ $(ASM_OBJ): $(ASM_SRC) | $(BUILDDIR)
 #         Recipe:       $(CC) $(CFLAGS) -c $< -o $@
 #
 # YOUR RULE HERE
-$(BUILDDIR)/gpio.o: $(SRCDIR)/gpio.c | $(BUILDDIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+# $(BUILDDIR)/gpio.o: $(SRCDIR)/gpio.c | $(BUILDDIR)
+# 	$(CC) $(CFLAGS) -c $< -o $@
 
 # P1.6 — Compile src/main.c into output/main.o  (explicit rule).
 #         Same form as P1.5 but for main.c.
 #
 # YOUR RULE HERE
-$(BUILDDIR)/main.o: $(SRCDIR)/main.c | $(BUILDDIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+# $(BUILDDIR)/main.o: $(SRCDIR)/main.c | $(BUILDDIR)
+# 	$(CC) $(CFLAGS) -c $< -o $@
 
 # P1.7 — Link all objects into the ELF.
 #         Target:       $(ELF)
@@ -102,8 +102,8 @@ $(BUILDDIR)/main.o: $(SRCDIR)/main.c | $(BUILDDIR)
 #                       ($^ = all dependencies listed above)
 #
 # YOUR RULE HERE
-$(ELF): $(BUILDDIR)/gpio.o $(BUILDDIR)/main.o $(ASM_OBJ)
-	$(CC) $(LDFLAGS) -o $@ $^
+# $(ELF): $(BUILDDIR)/gpio.o $(BUILDDIR)/main.o $(ASM_OBJ)
+# 	$(CC) $(LDFLAGS) -o $@ $^
 
 # P1.8 — Produce the binary and hex files from the ELF.
 #         $(BIN) rule: $(OBJCOPY) -O binary $< $@
@@ -129,7 +129,7 @@ $(HEX): $(ELF)
 # P2.1 — Derive OBJS from SRCS using a substitution reference.
 #         Replace the src/%.c pattern with output/%.o
 #         Hint: $(SRCS:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
-OBJS =
+OBJS = $(SRCS:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
 
 # P2.2 — Replace the two explicit C rules with one static pattern rule.
 #         Steps (do them together before running make — having both the explicit
@@ -144,7 +144,12 @@ OBJS =
 #               $(CC) $(CFLAGS) -c $< -o $@
 #
 # YOUR RULE HERE
+# add P1.7
+$(ELF): $(OBJS) $(ASM_OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
 
+$(OBJS): $(BUILDDIR)/%.o : $(SRCDIR)/%.c | $(BUILDDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # =============================================================================
 # PHASE 3 — Utility targets
